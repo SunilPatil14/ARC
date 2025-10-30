@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Prevent white borders on drag */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-color: #041C32;
+}
+
+/* RainbowKit UI fixes */
+[data-rk] {
+  z-index: 50 !important;
+}
+
+[data-rk] .rk-connect-modal,
+[data-rk] .rk-modal {
+  max-width: 95vw !important;
+  width: 400px !important;
+  margin: auto !important;
+  border-radius: 1rem !important;
+  background: rgba(10, 20, 40, 0.9) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 180, 255, 0.2);
+  box-shadow: 0 0 30px rgba(0, 180, 255, 0.2);
+}
