@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useChainId } from "wagmi";
 import { addArcNetwork } from "./chains/addArcNetwork";
 import { motion } from "framer-motion";
 
-const contractAddress = "enter_your_smart_contractaddress";
+const contractAddress = "0x1fE4265F349fa8E9c6AC31a47212b5D61A287f5c";
 const abi = [
   "function message() view returns (string)",
   "function updateMessage(string)",
