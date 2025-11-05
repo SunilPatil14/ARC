@@ -4,18 +4,18 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useChainId } from "wagmi";
 import { addArcNetwork } from "./chains/addArcNetwork";
 import { motion } from "framer-motion";
+import { AvatarBlockies } from "./utils/AvatarBlockies";
 
-const contractAddress = "0x758Fe97100ed582b1cc16962Cd3F394ab71CF252"; // 🔴 Replace with your deployed address
+const contractAddress = "0x758Fe97100ed582b1cc16962Cd3F394ab71CF252";
 const abi = [
   "function message() view returns (string)",
   "function updateMessage(string)",
-  "function getMessageHistory() view returns (tuple(address sender, string text, uint256 timestamp)[])"
+  "function getMessageHistory() view returns (tuple(address sender, string text, uint256 timestamp)[])",
 ];
 
 export default function App() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const [msg, setMsg] = useState("");
   const [newMsg, setNewMsg] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,6 @@ export default function App() {
     if (isConnected) fetchMessages();
   }, [isConnected, chainId]);
 
-  // ✅ Fetch all messages from contract
   async function fetchMessages() {
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -41,19 +40,20 @@ export default function App() {
           } catch {}
           return {
             sender: m.sender,
-            ens: ensName || m.sender.slice(0, 6) + "..." + m.sender.slice(-4),
+            ens: ensName || `${m.sender.slice(0, 6)}...${m.sender.slice(-4)}`,
             text: m.text,
-            time: date.toLocaleString(),
+            time: date.toLocaleTimeString(),
           };
         })
       );
-      setMessages(formatted.reverse());
+
+      // ✅ Show newest messages at bottom
+      setMessages(formatted);
     } catch (err) {
-      console.error("❌ Error fetching history:", err);
+      console.error("Error fetching messages:", err);
     }
   }
 
-  // ✅ Update message
   async function updateMessage() {
     if (!newMsg.trim()) return;
     try {
@@ -66,15 +66,15 @@ export default function App() {
       setNewMsg("");
       fetchMessages();
     } catch (err) {
-      console.error("❌ Error updating message:", err);
+      console.error("Error sending message:", err);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-[#030712] overflow-hidden relative text-white font-inter">
-      {/* 🔵 Background */}
+    <div className="min-h-screen w-full flex flex-col justify-center items-center bg-[#030712] overflow-hidden relative text-white font-inter">
+      {/* 🔵 Animated background gradients */}
       <motion.div
         className="absolute w-[900px] h-[900px] bg-gradient-to-tr from-cyan-500/25 to-blue-700/25 blur-[180px] rounded-full top-[-250px] right-[-250px]"
         animate={{ rotate: 360 }}
@@ -86,55 +86,70 @@ export default function App() {
         transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* Wallet connect */}
+      {/* 🪙 Wallet connect (top-right) */}
       <div className="absolute top-6 right-8 z-50">
         <ConnectButton showBalance={false} chainStatus="icon" />
       </div>
 
-      {/* Arc Logo */}
+      {/* ✨ Arc Network logo (top-left) */}
       <motion.div
         className="absolute top-8 left-8 z-40 flex items-center gap-3"
-        animate={{ scale: [1, 1.05, 1], opacity: [0.8, 1, 0.8] }}
+        animate={{ scale: [1, 1.06, 1], opacity: [0.8, 1, 0.8] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
         <img
           src="https://cdn.prod.website-files.com/685311a976e7c248b5dfde95/688f6e47eca8d8e359537b5f_logo-ondark.svg"
-          alt="Arc Logo"
-          className="w-16 h-16 drop-shadow-[0_0_12px_rgba(34,211,238,0.6)]"
+          alt="Arc Network Logo"
+          className="w-20 h-20 drop-shadow-[0_0_12px_rgba(34,211,238,0.6)]"
         />
       </motion.div>
 
-      {/* 💎 Main Card */}
+      {/* 💎 Chat Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative z-10 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 md:p-10 shadow-[0_0_60px_rgba(0,255,255,0.15)] max-w-2xl w-[95%] text-center"
+        className="relative z-10 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 md:p-10 shadow-[0_0_60px_rgba(0,255,255,0.15)] max-w-2xl w-[95%] flex flex-col justify-between"
       >
-        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 text-transparent bg-clip-text mb-4">
+        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 text-transparent bg-clip-text mb-4 text-center">
           Arc Chain Chat 💬
         </h1>
-        <p className="text-gray-300 mb-6">
-          Share and store messages on{" "}
-          <span className="text-cyan-400 font-semibold">Arc Testnet</span>.
-        </p>
 
-        {/* 🧠 Chat History */}
-        <div className="h-64 md:h-72 overflow-y-auto bg-white/5 border border-white/10 rounded-2xl p-4 mb-4 text-left space-y-3 scrollbar-thin scrollbar-thumb-cyan-500/30">
+        {/* Chat messages */}
+        <div className="flex-1 overflow-y-auto bg-white/5 border border-white/10 rounded-2xl p-4 mb-4 text-left space-y-4 scrollbar-thin scrollbar-thumb-cyan-500/30 max-h-[400px]">
           {messages.length > 0 ? (
-            messages.map((m, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
-                className="p-3 rounded-lg bg-white/10 border border-white/10"
-              >
-                <div className="text-cyan-300 font-semibold">{m.ens}</div>
-                <div className="text-white">{m.text}</div>
-                <div className="text-xs text-gray-400 mt-1">{m.time}</div>
-              </motion.div>
-            ))
+            messages.map((m, i) => {
+              const isMine = m.sender.toLowerCase() === address?.toLowerCase();
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className={`flex items-end gap-3 ${
+                    isMine ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  {!isMine && <AvatarBlockies address={m.sender} />}
+                  <div
+                    className={`p-3 rounded-2xl border ${
+                      isMine
+                        ? "bg-gradient-to-r from-cyan-600 to-blue-700 border-cyan-400/40 shadow-glow"
+                        : "bg-white/5 border-white/10"
+                    }`}
+                  >
+                    <div className="text-xs text-cyan-300 font-semibold mb-1">
+                      {m.ens}
+                    </div>
+                    <div className="text-sm text-white break-words">
+                      {m.text}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">{m.time}</div>
+                  </div>
+                  {isMine && <AvatarBlockies address={m.sender} />}
+                </motion.div>
+              );
+            })
           ) : (
             <p className="text-gray-400 text-sm text-center mt-4">
               No messages yet. Be the first to write!
@@ -142,8 +157,8 @@ export default function App() {
           )}
         </div>
 
-        {/* 💬 Input + Send */}
-        <div className="flex justify-center gap-2 mt-4">
+        {/* Input + Send */}
+        <div className="flex justify-center gap-2 mt-2">
           <input
             value={newMsg}
             onChange={(e) => setNewMsg(e.target.value)}

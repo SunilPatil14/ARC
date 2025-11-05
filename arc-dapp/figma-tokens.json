@@ -1,0 +1,21 @@
+{
+  "colors": {
+    "bg-900": "#010409",
+    "bg-800": "#020617",
+    "primary-500": "#00bcd4",
+    "primary-600": "#00a7c0",
+    "accent-500": "#6C5CE7",
+    "glass": "rgba(255,255,255,0.06)",
+    "muted-300": "#94a3b8",
+    "white": "#ffffff"
+  },
+  "typography": {
+    "h1": {"size":"2.5rem","weight":"800","family":"Inter"},
+    "h2": {"size":"1.5rem","weight":"700","family":"Inter"},
+    "body": {"size":"1rem","weight":"400","family":"Inter"}
+  },
+  "shadows": {
+    "soft":"0 8px 24px rgba(2,6,23,0.6)",
+    "glow":"0 20px 60px rgba(0,188,212,0.12)"
+  }
+}
