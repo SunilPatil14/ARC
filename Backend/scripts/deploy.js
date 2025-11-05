@@ -1,24 +1,26 @@
 const { ethers } = require("hardhat");
 
 async function main() {
+  console.log("🚀 Deploying contract to Arc Testnet...");
+
   const [deployer] = await ethers.getSigners();
-  console.log("Deploying contract with account:", deployer.address);
+  console.log("👤 Deployer address:", deployer.address);
 
-  const balance = await ethers.provider.getBalance(deployer.address);
-  console.log("Account balance:", ethers.formatEther(balance), "USD");
+  const balance = await deployer.provider.getBalance(deployer.address);
+  console.log("💰 Deployer balance:", ethers.formatEther(balance), "USDC");
 
-  // Deploy HelloArc with a constructor argument
-  const HelloArc = await ethers.getContractFactory("HelloArc");
-  const helloArc = await HelloArc.deploy("Hello ARC Network!");
+  // Compile and deploy your Message.sol
+  const Message = await ethers.getContractFactory("Message"); // make sure your file name matches
+  const message = await Message.deploy("Hello from Arc Testnet!");
 
-  await helloArc.waitForDeployment();
-
-  console.log("HelloArc contract deployed to:", await helloArc.getAddress());
+  await message.waitForDeployment();
+  console.log("✅ Contract deployed at:", await message.getAddress());
+  console.log("🌐 Explorer: https://testnet.arcscan.app/address/" + (await message.getAddress()));
 }
 
 main()
   .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
+  .catch((err) => {
+    console.error("❌ Deployment failed:", err);
     process.exit(1);
   });
