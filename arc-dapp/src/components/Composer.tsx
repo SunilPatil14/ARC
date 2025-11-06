@@ -1,4 +1,4 @@
-import React from "react";
+
 import { motion } from "framer-motion";
 
 export default function Composer({ newMsg, setNewMsg, onSend, loading } : any) {

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import  { useRef, useEffect } from "react";
 import MessageBubble from "./MessageBubble";
 
 export default function ChatFeed({ messages, address }: { messages: any[], address?: string }) {
